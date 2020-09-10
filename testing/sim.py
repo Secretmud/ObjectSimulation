@@ -62,9 +62,9 @@ def animate(t):
     global i, dt
     # some setup
     if (i == 0):
-        for ii in range(1, 6000):
-            x_vec.append(x_vec[ii-1]+dt)
-            y_vec.append(f(x_vec[ii-1]))
+        for ii in range(0, 6000):
+            x_vec.append(x_vec[ii]+dt)
+            y_vec.append(f(x_vec[ii]))
             
     plt.title("Braking length: %imeters" %i)
     y=f(x_sim[i])
