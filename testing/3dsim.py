@@ -16,8 +16,8 @@ m = float(input("Enter the mass:\t"))
 dt = float(input("Enter the Δt:\t"))
 v_init = float(input("Enter the velocity in km/h:\t"))/3.6
 v_x = [v_init]
-v_y = [v_init]
-x_sim = [0]
+v_y = [0]
+x_sim = [0.1]
 i = 0
 #func = input("Enter the function to test:\t")
 x_vec = [0]
@@ -27,22 +27,19 @@ y_tail = []
 
 # The function to use
 def f(x, y):
-    return np.power(x, 2)+np.power(y, 2)
+    return np.cos(x)
     #return eval(func)
 
-y_sim = [f(x_sim[0], 0)]
+y_sim = [0.1]
 z_sim = [f(x_sim[0], y_sim[0])]
 # The function derivative 
-def fd(x):
-    h = 0.0001
-    return (f(x+h)-f(x-h))/(2*h)
 
 def fdx(x,y):
-    h = 0.001
+    h = 0.0001
     return (f(x+h,y)-f(x-h,y))/(2*h)
 
 def fdy(x,y):
-    h = 0.001
+    h = 0.0001
     return (f(x,y+h)-f(x,y-h))/(2*h)
 
 # The signum
@@ -58,13 +55,13 @@ def N(ang):
     return m*g*cos(ang)
 
 # The friction force
-def R(v, ang, x):
-    if v[i] > 10e-8:
+def R(v, ang):
+    if v > 10e-7:
         return mu*N(ang)
-    elif (v[i] < 10e-8):
+    elif (v < 10e-8):
         return -mu*N(ang)
-    elif (abs(v[i]) < 10e-8):
-        return sign(x)*min(m*g*sin(ang), mu*N(ang))
+    elif (10e-7 < abs(v) < 10e-8):
+        return sign(v)*min(m*g*sin(ang), mu*N(ang))
     
 """
 This function will check if we have a colliosion or not. 
@@ -83,27 +80,29 @@ def animate(t):
     angx = theta(fdx(x_sim[i], y_sim[i]))
     angy = theta(fdy(x_sim[i], y_sim[i]))
     nx = N(angx)
-    rx = R(v_x, angx, x_sim[i])
+    rx = R(v_x[i], angx)
     ny = N(angy)
-    ry = R(v_y, angy, y_sim[i])
+    ry = R(v_y[i], angy)
+    z_sim.append(f(x_sim[i], y_sim[i]))
     v_x.append(v_x[i] + ((-nx*sin(angx)-rx*cos(angx))*dt)/m)
     v_y.append(v_y[i] + ((-ny*sin(angy)-rx*cos(angy))*dt)/m)
     x_sim.append(x_sim[i] + v_x[i]*dt)
     y_sim.append(y_sim[i] + v_y[i]*dt)
-    z_sim.append(f(x_sim[i], y_sim[i]))
     
     plt.cla()
-    ax.plot_wireframe(X, Y, Z, )
-    if i >= 3:
+    ax.plot_wireframe(X, Y, Z, rstride=5, cstride=5)
+    ax.plot(x_sim, y_sim, z_sim, color="black")
+    if i >= 4:
         ax.scatter(x_sim[i], y_sim[i], z_sim[i], color="black")
+
+    
     
     print("{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\r".format(x_sim[i], y_sim[i], z_sim[i], v_x[i], v_y[i]), end="")
     i += 1
 
-X = np.linspace(-10, 10, 300)
-Y = np.linspace(-10, 10, 300)
-
-X, Y = np.meshgrid(X, Y)
+X = np.linspace(-7.5, 0, 300)
+Y = np.linspace(0, 30, 300)
+X,Y = np.meshgrid(X, Y)
 
 Z = f(X, Y)
     
