@@ -4,10 +4,14 @@ from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
+from lib.physics import *
+
 print("Simulating a object sliding down a function")
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
+
+
 
 save_plot = input("Do you want to save the plot[y/n]?\t")
 mu = float(input("Enter a value for mu:\t"))
@@ -24,6 +28,8 @@ x_vec = [0]
 fps_tot = 60
 x_tail = []
 y_tail = []
+
+p = physics(m, g, mu)
 
 # The function to use
 def f(x, y):
@@ -42,47 +48,18 @@ def fdy(x,y):
     h = 0.0001
     return (f(x,y+h)-f(x,y-h))/(2*h)
 
-# The signum
-def sign(x):
-    return 1 if (x > 0) else ( 0 if (x == 0) else -1)
-
-# The angle theta
-def theta(x):
-    return atan(x)
-
-# The normal force
-def N(ang):
-    return m*g*cos(ang)
-
-# The friction force
-def R(v, ang):
-    if v > 10e-7:
-        return mu*N(ang)
-    elif (v < 10e-8):
-        return -mu*N(ang)
-    elif (10e-7 < abs(v) < 10e-8):
-        return sign(v)*min(m*g*sin(ang), mu*N(ang))
-    
-"""
-This function will check if we have a colliosion or not. 
-"""
-def collision(x, y, xs, ys):
-    if (xs > x and ys == y):
-        return True
-    return False
-
 """
 This function is the live simulation, it utilizes matplotlibs.animation.FuncAnimation.
 This let's us run the simulation for as long as we want, and have it updated in realtime.  
 """        
 def animate(t):
     global i, dt
-    angx = theta(fdx(x_sim[i], y_sim[i]))
-    angy = theta(fdy(x_sim[i], y_sim[i]))
-    nx = N(angx)
-    rx = R(v_x[i], angx)
-    ny = N(angy)
-    ry = R(v_y[i], angy)
+    angx = p.theta(fdx(x_sim[i], y_sim[i]))
+    angy = p.theta(fdy(x_sim[i], y_sim[i]))
+    nx = p.N(angx)
+    rx = p.R(v_x[i], angx)
+    ny = p.N(angy)
+    ry = p.R(v_y[i], angy)
     z_sim.append(f(x_sim[i], y_sim[i]))
     v_x.append(v_x[i] + ((-nx*sin(angx)-rx*cos(angx))*dt)/m)
     v_y.append(v_y[i] + ((-ny*sin(angy)-rx*cos(angy))*dt)/m)
