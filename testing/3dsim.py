@@ -15,7 +15,8 @@ g = 9.81
 m = float(input("Enter the mass:\t"))
 dt = float(input("Enter the Δt:\t"))
 v_init = float(input("Enter the velocity in km/h:\t"))/3.6
-v = [v_init]
+v_x = [v_init]
+v_y = [v_init]
 x_sim = [0]
 i = 0
 #func = input("Enter the function to test:\t")
@@ -26,7 +27,7 @@ y_tail = []
 
 # The function to use
 def f(x, y):
-    return x+2*y 
+    return np.power(x, 2)+np.power(y, 2)
     #return eval(func)
 
 y_sim = [f(x_sim[0], 0)]
@@ -69,7 +70,7 @@ def R(v, ang, x):
 This function will check if we have a colliosion or not. 
 """
 def collision(x, y, xs, ys):
-    if (xs > x and ys >= y):
+    if (xs > x and ys == y):
         return True
     return False
 
@@ -79,37 +80,37 @@ This let's us run the simulation for as long as we want, and have it updated in 
 """        
 def animate(t):
     global i, dt
-    # some setup
-    if (i == 0):
-        for ii in range(1, 800):
-            pass
-            
-    plt.title("Braking length: %imeters" %i)
-#    ang = theta(fd(x_sim[i]))
     angx = theta(fdx(x_sim[i], y_sim[i]))
     angy = theta(fdy(x_sim[i], y_sim[i]))
     nx = N(angx)
-    rx = R(v, angx, x_sim[i])
+    rx = R(v_x, angx, x_sim[i])
     ny = N(angy)
-    ry = R(v, angy, y_sim[i])
-    v_x = v[i] + ((-nx*sin(angx)-rx*cos(angx))*dt)/m
-    v_y = v[i] + ((-ny*cos(angy)-rx*sin(angy))*dt)/m
-    v.append(v_x-v_y)
-    x_sim.append(x_sim[i] + v[i]*dt)
-    y_sim.append(y_sim[i] + v[i]*dt)
+    ry = R(v_y, angy, y_sim[i])
+    v_x.append(v_x[i] + ((-nx*sin(angx)-rx*cos(angx))*dt)/m)
+    v_y.append(v_y[i] + ((-ny*sin(angy)-rx*cos(angy))*dt)/m)
+    x_sim.append(x_sim[i] + v_x[i]*dt)
+    y_sim.append(y_sim[i] + v_y[i]*dt)
     z_sim.append(f(x_sim[i], y_sim[i]))
-    plt.cla()
     
-    print("v(i): {:4.3f}\tx: {:2.3f}\t\r".format(v[i]*3.6, x_sim[i]), end="")
-    ax.plot_surface(x_sim[i], y_sim[i], z_sim[i])
+    plt.cla()
+    ax.plot_wireframe(X, Y, Z, )
+    if i >= 3:
+        ax.scatter(x_sim[i], y_sim[i], z_sim[i], color="black")
+    
+    print("{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\r".format(x_sim[i], y_sim[i], z_sim[i], v_x[i], v_y[i]), end="")
     i += 1
-    plt.legend(loc="upper right")
 
+X = np.linspace(-10, 10, 300)
+Y = np.linspace(-10, 10, 300)
+
+X, Y = np.meshgrid(X, Y)
+
+Z = f(X, Y)
     
     
 sim = FuncAnimation(plt.gcf(), animate,
                     frames=1800,
-                    interval=10,
+                    interval=20,
                     blit=False)
 
 if (save_plot.lower() == "y"):
