@@ -1,6 +1,7 @@
 from math import *
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from lib.physics import *
 
 print("Simulating a object sliding down a function")
 
@@ -18,6 +19,8 @@ func = input("Enter the function to test:\t")
 x_vec = [0]
 fps_tot = 60
 
+p = physics(m, g, mu)
+
 # The function to use
 def f(x):
     return eval(func)
@@ -28,27 +31,6 @@ y_sim = [f(x_sim[0])]
 def fd(x):
     h = 0.0001
     return (f(x+h)-f(x-h))/(2*h)
-
-# The signum
-def sign(x):
-    return 1 if (x > 0) else ( 0 if (x == 0) else -1)
-
-# The angle theta
-def theta(x):
-    return atan(x)
-
-# The normal force
-def N(ang):
-    return m*g*cos(ang)
-
-# The friction force
-def R(v, ang, x):
-    if v[i] > 10e-8:
-        return mu*N(ang)
-    elif (v[i] < 10e-8):
-        return -mu*N(ang)
-    elif (abs(v[i]) < 10e-8):
-        return sign(x)*min(m*g*sin(ang), mu*N(ang))
     
 """
 This function is the live simulation, it utilizes matplotlibs.animation.FuncAnimation.
