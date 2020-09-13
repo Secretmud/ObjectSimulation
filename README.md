@@ -26,4 +26,8 @@ I've chosen to go with python just for the ease of prototyping. I've already com
 
 I've also chosen to use matplotlib for it's excellent plotting interface, and for the current iteration I use numpy and I will probably continue using it.
 
+## Before running
 
+```
+pip install -r requirements.txt
+```
