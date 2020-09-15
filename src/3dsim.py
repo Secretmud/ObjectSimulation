@@ -20,23 +20,24 @@ m = float(input("Enter the mass:\t"))
 dt = float(input("Enter the Δt:\t"))
 v_init = float(input("Enter the velocity in km/h:\t"))/3.6
 v_x = [v_init]
-v_y = [0]
-x_sim = [0.1]
+v_y = [v_init]
+x_sim = [-2.5]
 i = 0
 #func = input("Enter the function to test:\t")
 x_vec = [0]
 fps_tot = 60
 x_tail = []
 y_tail = []
-
+x_lim = [-7.5, 0]
+y_lim = [-5, 5]
 p = physics(m, g, mu)
 
 # The function to use
 def f(x, y):
-    return np.cos(x)
+    return np.cos(x)+np.cos(y)
     #return eval(func)
 
-y_sim = [0.1]
+y_sim = [-2]
 z_sim = [f(x_sim[0], y_sim[0])]
 # The function derivative 
 
@@ -66,27 +67,28 @@ def animate(t):
     x_sim.append(x_sim[i] + v_x[i]*dt)
     y_sim.append(y_sim[i] + v_y[i]*dt)
     
-    plt.cla()
-    ax.plot_wireframe(X, Y, Z, rstride=5, cstride=5)
-    ax.plot(x_sim, y_sim, z_sim, color="black")
-    if i >= 4:
-        ax.scatter(x_sim[i], y_sim[i], z_sim[i], color="black")
 
+    if i >= 4:
+        ax.plot(x_sim, y_sim, z_sim, color="black")
+
+    if t%150==0 and i != 0:
+        ax.cla()
+        ax.plot_wireframe(X, Y, Z, rstride=5, cstride=5)
     
-    
-    print("{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\r".format(x_sim[i], y_sim[i], z_sim[i], v_x[i], v_y[i]), end="")
+    print("{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\r".format(angx, angy, rx, ry, nx, ny, v_x[i], v_y[i]), end="")
     i += 1
 
-X = np.linspace(-7.5, 0, 300)
-Y = np.linspace(0, 30, 300)
+X = np.linspace(x_lim[0], x_lim[1], 50)
+Y = np.linspace(y_lim[0], y_lim[1], 50)
 X,Y = np.meshgrid(X, Y)
 
-Z = f(X, Y)
+Z = f(X,Y)
     
+ax.plot_wireframe(X, Y, Z, rstride=5, cstride=5)
     
 sim = FuncAnimation(plt.gcf(), animate,
                     frames=1800,
-                    interval=20,
+                    interval=1,
                     blit=False)
 
 if (save_plot.lower() == "y"):

@@ -21,17 +21,18 @@ class physics:
 
     # The friction force
     def R(self, v, ang):
-        if v > 10e-7:
+        if v > 0:
             return self.mu*self.N(ang)
-        elif (v < 10e-8):
+        elif (v < 0):
             return -self.mu*self.N(ang)
-        elif (10e-7 < abs(v) < 10e-8):
+        else:
             return self.sign(v)*min(self.m*self.g*sin(ang), self.mu*self.N(ang))
 
     """
     This function will check if we have a colliosion or not. 
     """
-    def collision(self, x, y, xs, ys):
-        if (xs > x and ys == y):
-            return True
-        return False
+    def collider(self, pos, lim):
+        if lim[0] < pos or pos < lim[1]:
+            return -1
+        else:
+            return 1
