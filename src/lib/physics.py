@@ -32,7 +32,4 @@ class physics:
     This function will check if we have a colliosion or not. 
     """
     def collider(self, pos, lim):
-        if lim[0] < pos or pos < lim[1]:
-            return -1
-        else:
-            return 1
+        return -1 if (lim[0] < pos or pos < lim[1]) else 1

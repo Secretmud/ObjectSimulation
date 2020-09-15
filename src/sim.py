@@ -2,20 +2,20 @@ from math import *
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from lib.physics import *
+import numpy as np
 
 print("Simulating a object sliding down a function")
 
 
 save_plot = input("Do you want to save the plot[y/n]?\t")
-mu = float(input("Enter a value for mu:\t"))
+mu = 0.1
 g = 9.81
-m = float(input("Enter the mass:\t"))
-dt = float(input("Enter the Δt:\t"))
-v_init = float(input("Enter the velocity in km/h:\t"))/3.6
+m = 1
+dt = 0.006 
+v_init = 10/3.6
 v = [v_init]
 x_sim = [0]
 i = 0
-func = input("Enter the function to test:\t")
 x_vec = [0]
 fps_tot = 60
 
@@ -23,7 +23,7 @@ p = physics(m, g, mu)
 
 # The function to use
 def f(x):
-    return eval(func)
+    return (1/10*np.pi)*np.exp(-np.power(x/10,2))
 
 y_vec = [f(x_vec[0])]
 y_sim = [f(x_sim[0])]
@@ -52,9 +52,9 @@ def animate(t):
     y=f(x_sim[i])
     y_sim.append(y)
     fdv = fd(x_sim[i])
-    ang = theta(fdv)
-    n = N(ang)
-    r = R(v, ang, x_sim[i])
+    ang = p.theta(fdv)
+    n = p.N(ang)
+    r = p.R(v[i], ang)
     n_v = v[i] + ((-n*sin(ang)-r*cos(ang))*dt)/m 
     v.append(n_v)
     x_sim.append(x_sim[i] + v[i]*dt)
