@@ -9,6 +9,8 @@ src/sim.py - 1D simulation. Will be adding 2D later. But as of right now, y = f(
 
 src/3dsim.py - 2D simulation. This updates both x and y according to their respective speeds and theta z = f(x, y)
 
+src/simulation.py - A file that will allow you run alltypes of simulations. This will give a greate advantage over having multiple singular files, as you can control the entire program from one runtime. 
+
 src/lib/physics.py - A class that holds the few functions we currently need. We could just have them in the respective simulation-files, but it's a lot cleaner doing it this way.
 
 ## Idea
