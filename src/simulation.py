@@ -22,14 +22,15 @@ def fdx(x,y):
 def fdy(x,y):
     h = 0.0001
     return (f(x,y+h)-f(x,y-h))/(2*h)
+v_init = 8/3.6
 
 N = 3 
 x_lim = [-5, 1]
 y_lim = [2, -5]
-vx = [4] *N
-vy = [5] *N
-posx = [-2] *N
-posy = [-3] *N
+vx = [v_init] *N
+vy = [v_init] *N
+posx = [-1] *N
+posy = [-4] *N
 posz = [f(posx[0], posy[0])] *N
 i = 0
 m = 1
@@ -62,7 +63,7 @@ def animate(t):
     ry = p.R(vy[i], angy)
 
     vx[i+1] = vx[i] + ((-nx*sin(angx)-rx*cos(angx))*dt)/m
-    vy[i+1] = vy[i] + ((-nx*sin(angx)-rx*cos(angx))*dt)/m
+    vy[i+1] = vy[i] + ((-ny*sin(angy)-ry*cos(angy))*dt)/m
 
     posx[i+1] = posx[i] + vx[i]*dt
     posy[i+1] = posy[i] + vy[i]*dt
@@ -72,8 +73,15 @@ def animate(t):
     vy[i+1] *= p.collider(posy[i+1], y_lim)
 
     
-    if t%10==0:
-        ax.plot(posx, posy, posz, color="black")
+    if t%15==0:
+        ax.scatter(posx[i], posy[i], posz[i], color="black")
+
+#    if t%550==0:
+#        ax.cla()
+#        ax.plot_wireframe(X, Y, Z, rstride=1, cstride=1)
+#        ax.set_xlabel("X")
+#        ax.set_ylabel("Y")
+#        ax.set_zlabel("Z")
         
     print("{:4}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\t{:4.3f}\r".format(t, angx, angy, rx, ry, nx, ny, vx[i], vy[i]), end="")
     
@@ -86,7 +94,7 @@ X,Y = np.meshgrid(X, Y)
 
 Z = f(X,Y)
     
-ax.plot_wireframe(X, Y, Z, rstride=1, cstride=1)
+ax.plot_wireframe(X, Y, Z, rstride=5, cstride=5)
 ax.set_xlabel("X")
 ax.set_ylabel("Y")
 ax.set_zlabel("Z")
@@ -94,7 +102,7 @@ ax.set_zlabel("Z")
 
 sim = FuncAnimation(plt.gcf(), animate,
                     frames=1800,
-                    interval=1,
+                    interval=20,
                     blit=False)
     
 
