@@ -1,10 +1,10 @@
 from math import atan, sin, cos
 
 class physics:
-    def __init__(self, m, g, mu):
-        self.m = m
+    def __init__(self, g, mu, step):
         self.g = g
         self.mu = mu
+        self.step = step
 
         
     # The signum
@@ -17,7 +17,7 @@ class physics:
 
     # The normal force
     def N(self, ang):
-        return self.m*self.g*cos(ang)
+        return self.g*cos(ang)
 
     # The friction force
     def R(self, v, ang):
@@ -26,12 +26,10 @@ class physics:
         elif (v < 0):
             return -self.mu*self.N(ang)
         else:
-            return self.sign(v)*min(self.m*self.g*sin(ang), self.mu*self.N(ang))
+            return self.sign(v)*min(self.g*sin(ang), self.mu*self.N(ang))
 
     """
     This function will check if we have a colliosion or not. 
     """
     def collider(self, pos, lim):
-        b = max(lim[0], lim[1])
-        l = min(lim[0], lim[1])
-        return 1 if (l <= pos <= b) else -1
+        return 1 if (min(lim[0], lim[1]) + self.step < pos < max(lim[0], lim[1]) - self.step) else -1
