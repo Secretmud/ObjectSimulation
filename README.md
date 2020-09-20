@@ -21,6 +21,7 @@ Simulate how an object acts and moves in different planes.
 
 - Simulate breaking distance on different surfaces
 - Simulate how a object would slide down a slope, and how far it would go.
+	- Simulating using different algorithms Euler Cromer, Heun's method, Runge Kutta 4 etc. 
 
 
 ## Language
