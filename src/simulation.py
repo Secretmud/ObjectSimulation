@@ -36,15 +36,17 @@ y_lim = [-5, -1]
 
 e = Algo(N, mu, ax[0], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC)
 h = Algo(N, mu, ax[1], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC)
+r = Algo(N, mu, ax[2], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC)
 
 X = np.linspace(x_lim[0], x_lim[1], 50)
 Y = np.linspace(y_lim[0], y_lim[1], 50)
 X,Y = np.meshgrid(X, Y)
 fun = function_prot(0.0001, func)
 Z = fun.f(X,Y)
-
+titles = ["Euler Cromer", "Heun's Method", "RK4", "Summary"]
 for i in range(len(ax)):
     ax[i].plot_wireframe(X, Y, Z, rstride=5, cstride=5)
+    ax[i].set_title(titles[i])
     ax[i].set_xlabel("X-axis")
     ax[i].set_ylabel("Y-axis")
     ax[i].set_zlabel("Z-axis")
@@ -55,8 +57,9 @@ t = 0
 while True:
     e.euler(t)
     h.heuns(t)
+    r.rk4(t)
     t+=1
-    plt.pause(0.005)
+    plt.pause(dt)
 
 plt.show()
 
