@@ -2,10 +2,11 @@ from lib.physics import *
 from lib.function_prot import *
 
 class Algo:
-    """Euler Cromer  
+    """Algorithms used  
     
 
-    This method class implements Euler Cromer, and is used to 
+    This method class implements different type of algorithms, and is used to create different instances so that we
+    can simulate them at the same time.
 
     """
     
@@ -15,8 +16,6 @@ class Algo:
         self.N = N
         self.vx = [v_ix] *N
         self.vy = [v_iy] *N
-        self.ax = [0] *N
-        self.ay = [0] *N
         self.posx = [1] *N
         self.posy = [-4] *N
         self.posz = [self.fun.f(self.posx[0], self.posy[0])] *N
@@ -40,49 +39,43 @@ class Algo:
             self.vx[0] = self.vx[-1]
             self.vy[0] = self.vy[-1]
  
-
-    def ang(self, x, y):
-        angx = self.p.theta(self.fun.fdx(self.posx[self.i], self.posy[self.i]))
-        angy = self.p.theta(self.fun.fdy(self.posx[self.i], self.posy[self.i]))
-
-        return angx, angy
-
-    
-    def n(self, angx, angy):
-        nx = self.p.N(angx)
-        ny = self.p.N(angy)
         
-        return nx, ny
+    def a_x(self, x, y):
+        ang = self.p.theta(self.fun.fdx(x, y))
+        n = self.p.N(ang)
+        r = self.p.R(self.vx[self.i], ang)
+        return -n*sin(ang)-r*cos(ang)
 
+    def a_y(self, x, y):
+        ang = self.p.theta(self.fun.fdy(x, y))
+        n = self.p.N(ang)
+        r = self.p.R(self.vy[self.i], ang)
+        return -n*sin(ang)-r*cos(ang)
 
-    def R(self, angx, angy):
-        rx = self.p.R(self.vx[self.i], angx)
-        ry = self.p.R(self.vy[self.i], angy)
-
-        return rx, ry
-        
-    
+    # Collision 
     def collision(self):
         self.vx[self.i+1] *= self.p.collider(self.posx[self.i+1], self.x_lim)
         self.vy[self.i+1] *= self.p.collider(self.posy[self.i+1], self.y_lim)
 
-    def a(self, ang, n, r):
-        return -n*sin(ang)-r*cos(ang)
-        
     def euler(self, t):
-        self.reset()
- 
-        (angx, angy) = self.ang(self.posx[self.i], self.posy[self.i])
-        (nx, ny) = self.n(angx, angy)
-        (rx, ry) = self.R(angx, angy)
+        """Euler's method is implemented below
 
-        self.vx[self.i+1] = self.vx[self.i] + (self.a(angx, nx, rx))*self.dt
-        self.vy[self.i+1] = self.vy[self.i] + (self.a(angy, ny, ry))*self.dt
+        Euler's method is a rather simple aproach to this problem, but the overall fault in the calculation is similar to O(dt).
+        Which makes it less forgiving when running with poor equipment or 
+        """
+        self.reset() # Reset if i + 1 == Self.N 
+
+        a1 = self.a_x(self.posx[self.i], self.posy[self.i]) 
+        a2 = self.a_y(self.posx[self.i], self.posy[self.i]) 
+
+        self.vx[self.i+1] = self.vx[self.i] + a1*self.dt
+        self.vy[self.i+1] = self.vy[self.i] + a2*self.dt
 
         self.posx[self.i+1] = self.posx[self.i] + self.vx[self.i]*self.dt
         self.posy[self.i+1] = self.posy[self.i] + self.vy[self.i]*self.dt
         self.posz[self.i+1] = self.fun.f(self.posx[self.i], self.posy[self.i])
 
+        # Calling the collision function to have the object bounce of the wall
         self.collision()
 
         if t==0:
@@ -92,70 +85,38 @@ class Algo:
             self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
 
         self.i+=1
+        self.time += self.t_s
+
+        return (np.sqrt(np.power(self.vx[self.i], 2) + np.power(self.vy[self.i], 2)), np.sqrt(np.power(a1, 2) + np.power(a2, 2)))
+
 
     def heuns(self, t):
-        self.reset()
+        """Heun's method is implemented below
 
-        (angx, angy)= self.ang(self.posx[self.i], self.posy[self.i])
-        (nx, ny) = self.n(angx, angy)
-        (rx, ry) = self.R(angx, angy)
-
-        self.vx[self.i+1] = self.vx[self.i] + self.a(angx, nx, rx)*self.dt
-        self.vy[self.i+1] = self.vy[self.i] + self.a(angy, ny, ry)*self.dt
-        x2 = self.fun.f(self.posx[self.i] + self.dt*self.vx[self.i+1], self.time + self.dt)
-        y2 = self.fun.f(self.posy[self.i] + self.dt*self.vy[self.i+1], self.time + self.dt)
-
-        self.posx[self.i+1] = self.posx[self.i] + (self.dt/2)*(self.vx[self.i+1]+x2)
-        self.posy[self.i+1] = self.posy[self.i] + (self.dt/2)*(self.vy[self.i+1]+y2)
-        
-
+        The idea of heun's is an improvement of Eulers which is implemented above, the fault. is a lot less. 
+        This function should give a better prediction of the path an object would take when going down a slope
+        """
+        self.reset() # Reset if i + 1 == Self.N
+        a1 = self.a_x(self.posx[self.i] + self.vx[self.i]*self.dt/2, self.posy[self.i] + self.vy[self.i]*self.dt/2) 
+        a2 = self.a_y(self.posx[self.i] + self.vx[self.i]*self.dt/2, self.posy[self.i] + self.vy[self.i]*self.dt/2)
+        self.vx[self.i+1] = self.vx[self.i] + a1*self.dt 
+        self.vy[self.i+1] = self.vy[self.i] + a2*self.dt 
+        self.posx[self.i+1] = self.posx[self.i] + self.vx[self.i]*self.dt + (np.power(self.dt, 2)/2)*(self.fun.f(self.posx[self.i], self.posy[self.i]))
+        self.posy[self.i+1] = self.posy[self.i] + self.vy[self.i]*self.dt + (np.power(self.dt, 2)/2)*(self.fun.f(self.posx[self.i], self.posy[self.i]))
         self.posz[self.i+1] = self.fun.f(self.posx[self.i], self.posy[self.i])
 
+        # Calling the collision function to have the object bounce of the wall
         self.collision()
         
-        
+        # Create the scatter object at  t==0, and delete it and create it again for every iteration you've set.
+        # This creates a smooth animation.
         if t==0:
             self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
         if t%self.USER_PC==0:
             self.l.remove()
             self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
-            
+        # Increment i    
         self.i+=1
         self.time += self.t_s
 
-    def rk4(self, t):
-        self.reset()
-
-        (angx, angy)= self.ang(self.posx[self.i], self.posy[self.i])
-        (nx, ny) = self.n(angx, angy)
-        (rx, ry) = self.R(angx, angy)
-
-        self.vx[self.i+1] = self.vx[self.i] + self.a(angx, nx, rx)*self.dt
-        self.vy[self.i+1] = self.vy[self.i] + self.a(angy, ny, ry)*self.dt
-
-        x1 = self.vx[self.i]*self.dt
-        x2 = (self.fun.f(self.time + self.dt/2,self.posx[self.i] + x1/2))*self.dt
-        x3 = (self.fun.f(self.time + self.dt/2,self.posx[self.i] + x2/2))*self.dt
-        x4 = (self.fun.f(self.time + self.dt  ,self.posx[self.i] + x3))*self.dt
-        
-        y1 = self.vy[self.i]*self.dt
-        y2 = (self.fun.f(self.time + self.dt/2,self.posy[self.i] + y1/2))*self.dt
-        y3 = (self.fun.f(self.time + self.dt/2,self.posy[self.i] + y2/2))*self.dt
-        y4 = (self.fun.f(self.time + self.dt  ,self.posy[self.i] + y3))*self.dt
-        
-        self.posx[self.i+1] = self.posx[self.i] + (x1+2*x2+2*x3+x4)/6 
-        self.posy[self.i+1] = self.posy[self.i] + (y1+2*y2+2*y3+y4)/6
-        self.posz[self.i+1] = self.fun.f(self.posx[self.i], self.posy[self.i])
-
-
-        self.collision()
-        
-        
-        if t==0:
-            self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
-        if t%self.USER_PC==0:
-            self.l.remove()
-            self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
-            
-        self.i+=1
-        self.time += self.t_s
+        return (np.sqrt(np.power(self.vx[self.i], 2) + np.power(self.vy[self.i], 2)), np.sqrt(np.power(a1, 2) + np.power(a2, 2)))

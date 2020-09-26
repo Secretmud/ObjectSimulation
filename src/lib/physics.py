@@ -17,14 +17,14 @@ class physics:
 
     # The normal force
     def N(self, ang):
-        return self.g*cos(ang)
+        return self.g * cos(ang)
 
     # The friction force
     def R(self, v, ang):
         if v > 0:
-            return self.mu*self.N(ang)
+            return self.mu * self.N(ang)
         elif (v < 0):
-            return -self.mu*self.N(ang)
+            return -self.mu * self.N(ang)
         else:
             return self.sign(v)*min(self.g*sin(ang), self.mu*self.N(ang))
 
@@ -32,4 +32,4 @@ class physics:
     This function will check if we have a colliosion or not. 
     """
     def collider(self, pos, lim):
-        return 1 if (min(lim[0], lim[1]) + self.step < pos < max(lim[0], lim[1]) - self.step) else -1
+        return 1 if (min(lim[0], lim[1]) < pos < max(lim[0], lim[1])) else -1
