@@ -1,3 +1,10 @@
+"""
+    File name: simulation.py
+    Author: Tor Kristian
+    Date created: 07/09/2020
+    Date last modified: 28/09/2020
+    Python Version: 3.8
+"""
 from math import *
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -11,6 +18,7 @@ print("Simulating a object sliding down a function")
 i = 0
 dt = float(input("Enter a value for delta t:\t"))
 
+# Doing some assignments for matplotlib, fig, ax[2] 
 fig = plt.figure()
 ax = [0]*2
 ax[0] = fig.add_subplot(211, projection='3d')
@@ -36,17 +44,37 @@ if (N < 3):
     N = 3
     print("N has to be three or larger, N is set to 3")
 
-x_lim = [-5, 5]
-y_lim = [-5, -1]
+# Setting the x and y limit.
+x_lim = [float(input("x, lower:\t")), float(input("x, upper:\t"))]
+y_lim = [float(input("y, lower:\t")), float(input("y, upper:\t"))]
+# Setting starting x and y. But with default values, x = x_lim[0] + 1 and y = y_lim[0] + 1.
+x = ""
+y = ""
+# Doing a try except for ValueError, and asserting default values if the ValueError is hit
+try:
+    x = int(input(f"provide a starting value for x(default is {x_lim[0] + 1}):\t"))
+except ValueError:
+    if x == "":
+        x = x_lim[0] + 1
+try:    
+    y = int(input(f"provide a starting value for y(default is {y_lim[0] + 1}):\t"))
+except ValueError:
+    if y == "":
+        y = y_lim[0] + 1
 
-e = Algo(N, mu, ax[0], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC)
-h = Algo(N, mu, ax[1], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC)
+# Initializing Forward Euler and Heuns with the values they need.
+e = Algo(N, mu, ax[0], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, x, y)
+h = Algo(N, mu, ax[1], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, x, y)
 
+# Using linspace with limts to create the X and Y values
 X = np.linspace(x_lim[0], x_lim[1], 50)
 Y = np.linspace(y_lim[0], y_lim[1], 50)
+# Creating a meshgrig with the two linspaces above
 X,Y = np.meshgrid(X, Y)
 fun = function_prot(0.001, func)
+# Creating Z using the given function
 Z = fun.f(X,Y)
+# Initializing the plot using a for loop and giving them titles
 titles = ["Euler Cromer", "Heun's Method"]
 for i in range(len(ax)):
     ax[i].plot_wireframe(X, Y, Z, rstride=5, cstride=5)
@@ -55,10 +83,8 @@ for i in range(len(ax)):
     ax[i].set_ylabel("Y-axis")
     ax[i].set_zlabel("Z-axis")
 
-
+# Setting a initial value for t and running the while loop forever and plotting every 0.05 seconds
 t = 0
-
-
 while True:
     e.euler(t)
     h.heuns(t)
