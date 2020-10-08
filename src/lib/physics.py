@@ -32,12 +32,10 @@ class physics:
     # The friction force
     def R(self, v, ang):
         """R(v, ang) return the friction depending on speed and angle"""
-        if v > 1e-7:
+        if v > 0:
             return self.mu * self.N(ang)
-        elif (v < 1e-9):
-            return -self.mu * self.N(ang)
         else:
-            return self.sign(v)*min(self.g*sin(ang), self.mu*self.N(ang))
+            return -self.mu * self.N(ang)
 
     def collider(self, pos, lim):
         """collider(pos, lim) return 1 if the current pos is within the limit, or -1 if the pos is on the edge or outside"""

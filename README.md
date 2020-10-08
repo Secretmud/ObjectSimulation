@@ -35,3 +35,19 @@ I've also chosen to use matplotlib for it's excellent plotting interface, and fo
 ```
 pip install -r requirements.txt
 ```
+
+secret src $ python3.8 simulation.py 
+Simulating a object sliding down a function
+Enter a value for delta t:	0.05
+Enter the function:	np.sin(x)+np.cos(y)
+Enter the friction ceofficient:	0.1
+How often do you want to plot? from 1..100(1 requires extreme PC performance, you're adviced to set atleast 10):	1
+Initial x velocity:	1
+Initial y velocity(leave blank if you want the same as x):	
+Tail size(3..):	10
+x, lower:	1
+x, upper:	10
+y, lower:	1
+y, upper:	10
+provide a starting value for x(default is 2.0):	
+provide a starting value for y(default is 2.0):	

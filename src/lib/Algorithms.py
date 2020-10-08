@@ -88,7 +88,7 @@ class Algo:
 
         self.posx[self.i+1] = self.posx[self.i] + self.vx[self.i]*self.dt # Update the next position for x,y and z. x and y is calculated based on the velocity and z is based on x and y.
         self.posy[self.i+1] = self.posy[self.i] + self.vy[self.i]*self.dt
-        self.posz[self.i+1] = self.fun.f(self.posx[self.i], self.posy[self.i])
+        self.posz[self.i+1] = self.fun.f(self.posx[self.i+1], self.posy[self.i+1])
 
         # Calling the collision function to have the object bounce of the wall
         self.collision()
