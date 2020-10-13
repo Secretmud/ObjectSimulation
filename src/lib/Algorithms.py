@@ -15,7 +15,7 @@ class Algo:
     This method class implements different type of algorithms, and is used to create different instances so that we
     can simulate them at the same time.
     """
-    def __init__(self, N, mu, ax, v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, x, y):
+    def __init__(self, N, mu, ax, v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, plot, x, y):
         self.fun = function_prot(0.0001, func)
         self.dt = dt
         self.N = N
@@ -33,8 +33,12 @@ class Algo:
         self.USER_PC = USER_PC
         self.time = dt
         self.t_s = dt
+        self.plot = plot
 
 
+    def setdt(self, dt):
+            self.dt = dt
+        
     def reset(self):
         """reset() checks if i + 1 is equal to the set list size, if it is it copies the last value and inserts it into the start of the list.
         
@@ -95,16 +99,17 @@ class Algo:
 
         # Create the scatter object at  t==0, and delete it and create it again for every iteration you've set.
         # This creates a smooth animation.
-        if t==0:
-            self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
-        if t%self.USER_PC==0:
-            self.l.remove()
-            self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
+        if self.plot:
+            if t==0:
+                self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
+            if t%self.USER_PC==0:
+                self.l.remove()
+                self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
 
         # Increment i    
         self.i+=1
 
-        return (np.sqrt(np.power(self.vx[self.i], 2) + np.power(self.vy[self.i], 2)), np.sqrt(np.power(a1, 2) + np.power(a2, 2)))
+        return (self.posx[self.i], self.posy[self.i]) 
 
 
     def heuns(self, t):
@@ -124,20 +129,21 @@ class Algo:
         # Update the next position for x,y and z. x and y is calculated based on the velocity and z is based on x and y. 
         self.posx[self.i+1] = self.posx[self.i] + self.vx[self.i]*self.dt + (np.power(self.dt, 2)/2)*(self.fun.f(self.posx[self.i], self.posy[self.i]))
         self.posy[self.i+1] = self.posy[self.i] + self.vy[self.i]*self.dt + (np.power(self.dt, 2)/2)*(self.fun.f(self.posx[self.i], self.posy[self.i]))
-        self.posz[self.i+1] = self.fun.f(self.posx[self.i], self.posy[self.i])
+        self.posz[self.i+1] = self.fun.f(self.posx[self.i+1], self.posy[self.i+1])
 
         # Calling the collision function to have the object bounce of the wall
         self.collision()
         
         # Create the scatter object at  t==0, and delete it and create it again for every iteration you've set.
         # This creates a smooth animation.
-        if t==0:
-            self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
-        if t%self.USER_PC==0:
-            self.l.remove()
-            self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
+        if self.plot:
+            if t==0:
+                self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
+            if t%self.USER_PC==0:
+                self.l.remove()
+                self.l = self.ax.scatter(self.posx, self.posy, self.posz, color="black")
 
         # Increment i    
         self.i+=1
 
-        return (np.sqrt(np.power(self.vx[self.i], 2) + np.power(self.vy[self.i], 2)), np.sqrt(np.power(a1, 2) + np.power(a2, 2)))
+        return (self.posx[self.i], self.posy[self.i]) 

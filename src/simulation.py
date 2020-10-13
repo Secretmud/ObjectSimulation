@@ -21,8 +21,8 @@ dt = float(input("Enter a value for delta t:\t"))
 # Doing some assignments for matplotlib, fig, ax[2] 
 fig = plt.figure()
 ax = [0]*2
-ax[0] = fig.add_subplot(211, projection='3d')
-ax[1] = fig.add_subplot(212, projection='3d')
+ax[0] = fig.add_subplot(121, projection='3d')
+ax[1] = fig.add_subplot(122, projection='3d')
 func = input("Enter the function:\t")
 mu = float(input("Enter the friction ceofficient:\t"))
 
@@ -61,14 +61,14 @@ try:
 except ValueError:
     if y == "":
         y = y_lim[0] + 1
-
+plot = True
 # Initializing Forward Euler and Heuns with the values they need.
-e = Algo(N, mu, ax[0], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, x, y)
-h = Algo(N, mu, ax[1], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, x, y)
+e = Algo(N, mu, ax[0], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, plot, x, y)
+h = Algo(N, mu, ax[1], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, plot, x, y)
 
 # Using linspace with limts to create the X and Y values
-X = np.linspace(x_lim[0], x_lim[1], 50)
-Y = np.linspace(y_lim[0], y_lim[1], 50)
+X = np.linspace(x_lim[0], x_lim[1], 60)
+Y = np.linspace(y_lim[0], y_lim[1], 60)
 # Creating a meshgrig with the two linspaces above
 X,Y = np.meshgrid(X, Y)
 fun = function_prot(0.001, func)
@@ -77,7 +77,7 @@ Z = fun.f(X,Y)
 # Initializing the plot using a for loop and giving them titles
 titles = ["Euler Cromer", "Heun's Method"]
 for i in range(len(ax)):
-    ax[i].plot_wireframe(X, Y, Z, rstride=5, cstride=5)
+    ax[i].plot_wireframe(X, Y, Z, rstride=3, cstride=3)
     ax[i].set_title(titles[i])
     ax[i].set_xlabel("X-axis")
     ax[i].set_ylabel("Y-axis")
