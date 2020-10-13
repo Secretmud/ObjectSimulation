@@ -106,6 +106,7 @@ ax[2].plot(dts,np.log(fe) + np.log(dts), 'bo-',  marker="*", linewidth=1, label=
 ax[2].plot(dts,np.log(fh) + 2*np.log(dts), 'go-', marker="*", linewidth=1, label="Heun's")
 ax[2].set_xlabel("dt")
 ax[2].set_ylabel("Error")
+ax[2].legend()
 plt.show()
 
 
