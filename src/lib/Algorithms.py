@@ -109,7 +109,7 @@ class Algo:
         # Increment i    
         self.i+=1
 
-        return (self.posx[self.i], self.posy[self.i]) 
+        return (self.posx[self.i-1], self.posy[self.i-1]) 
 
 
     def heuns(self, t):
@@ -146,4 +146,4 @@ class Algo:
         # Increment i    
         self.i+=1
 
-        return (self.posx[self.i], self.posy[self.i]) 
+        return (self.posx[self.i-1], self.posy[self.i-1]) 

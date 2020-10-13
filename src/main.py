@@ -45,10 +45,11 @@ e = Algo(N, mu, ax[0], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, plot, x, y)
 h = Algo(N, mu, ax[1], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, plot, x, y)
 # Initializing the plot using a for loop and giving them titles
 # Setting a initial value for t and running the while loop forever and plotting every 0.05 seconds
-steps = 5
+steps = 15
+tend = 0.5 
 time_t = time()
 print("calculating perfect val")
-for i in range(13):
+for i in range(25):
     dt /= 2
 print(dt)
 h.setdt(dt)
@@ -67,7 +68,8 @@ try:
         csvfile.close()
 except IOError:
     print(f"end {steps/dt}")
-    while t < steps/dt:
+    t = 0
+    while t < tend/dt:
         (xend, yend) = h.heuns(t)
         t += 1
 
@@ -77,20 +79,20 @@ print(f"x {xend} y {yend} dt {dt}")
 
 dt = 0.1
 h.setdt(dt)
-end = steps/dt
+end = tend/dt
 t = 0
-end = steps/dt
 fh = [1] * steps
 fe = [1] * steps
 dts = [1] * steps
 for i in range(0, steps):
     while t < end:
-        (xe, ye) = e.euler(t)
-        fe[i] = np.sqrt(np.power(xend-xe, 2) + np.power(yend-ye,2))
+        e.euler(t)
+        h.heuns(t)
         t+=1
-        (xh, yh) = h.heuns(t)
-        fh[i] = np.sqrt(np.power(xend-xh, 2) + np.power(yend-yh,2))
-        t+=1
+    (xe, ye) = e.euler(t)
+    (xh, yh) = h.heuns(t)
+    fe[i] = np.sqrt(np.power(xend-xe, 2) + np.power(yend-ye,2))
+    fh[i] = np.sqrt(np.power(xend-xh, 2) + np.power(yend-yh,2))
     print(f"FH: {fh[i]} FE: {fe[i]}")
     dts[i] = dt
     dt /= 2
@@ -98,12 +100,14 @@ for i in range(0, steps):
     h.setdt(dt)
     e.setdt(dt)
     t = 0
-    end = steps/dt
+    end = tend/dt
 
 
 print(f"Simulation is finished. It took {time() - time_t}")
-ax[2].plot(dts,np.log(fe) + np.log(dts), 'bo-',  marker="*", linewidth=1, label="Euler")
-ax[2].plot(dts,np.log(fh) + 2*np.log(dts), 'go-', marker="*", linewidth=1, label="Heun's")
+ax[2].plot(dts,np.abs(fe), 'bo-',  marker="*", linewidth=1, label="Euler")
+ax[2].plot(dts,np.abs(fh), 'go-', marker="*", linewidth=1, label="Heun's")
+ax[2].set_yscale('log')
+ax[2].set_xscale('log')
 ax[2].set_xlabel("dt")
 ax[2].set_ylabel("Error")
 ax[2].legend()
