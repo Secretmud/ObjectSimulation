@@ -12,85 +12,71 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 from lib.Algorithms import *
 from lib.function_prot import *
+from time import sleep
 
-print("Simulating a object sliding down a function")
 
-i = 0
-dt = float(input("Enter a value for delta t:\t"))
+class Simulation:
 
-# Doing some assignments for matplotlib, fig, ax[2] 
-fig = plt.figure()
-ax = [0]*2
-ax[0] = fig.add_subplot(121, projection='3d')
-ax[1] = fig.add_subplot(122, projection='3d')
-func = input("Enter the function:\t")
-mu = float(input("Enter the friction ceofficient:\t"))
+    def __init__(self, dt, func, mu, update_time, v_ix, v_iy, n, x_lim, y_lim, plot, x, y):
+        self.dt = dt
+        self.fig = plt.figure()
+        self.ax = [0] * 2
+        self.ax[0] = self.fig.add_subplot(121, projection='3d')
+        self.ax[1] = self.fig.add_subplot(122, projection='3d')
+        self.e = Algo(n, mu, self.ax[0], v_ix, v_iy, func, dt, x_lim, y_lim, update_time, plot, x, y)
+        self.h = Algo(n, mu, self.ax[1], v_ix, v_iy, func, dt, x_lim, y_lim, update_time, plot, x, y)
+        self.x_lim = x_lim
+        self.y_lim = y_lim
+        self.func = func
 
-USER_PC = int(input("How often do you want to plot? from 1..100(1 requires extreme PC performance, you're adviced to set atleast 10):\t"))
-v_ix = float(input("Initial x velocity:\t"))
-try:
-    v_iy = float(input("Initial y velocity(leave blank if you want the same as x):\t"))
-except ValueError:
-    v_iy = None
-v_iy = v_ix if (v_iy == None) else v_iy
 
-# N set's the tail size, it can be anything from 1 to whatever you want
-try:
-    N = int(input("Tail size(3..):\t"))
-except ValueError:
-    N = 3
+    def simulate(self):
+        # Using linspace with limts to create the X and Y values
+        X = np.linspace(self.x_lim[0], self.x_lim[1], 60)
+        Y = np.linspace(self.y_lim[0], self.y_lim[1], 60)
+        # Creating a meshgrig with the two linspaces above
+        X, Y = np.meshgrid(X, Y)
+        fun = function_prot(0.001, self.func)
+        # Creating Z using the given function
+        Z = fun.f(X, Y)
+        # Initializing the plot using a for loop and giving them titles
+        titles = ["Forward Euler", "Heun's Method"]
+        for i in range(len(self.ax)):
+            self.ax[i].plot_wireframe(X, Y, Z, rstride=3, cstride=3)
+            self.ax[i].set_title(titles[i])
+            self.ax[i].set_xlabel("X-axis")
+            self.ax[i].set_ylabel("Y-axis")
+            self.ax[i].set_zlabel("Z-axis")
 
-if (N < 3):
-    N = 3
-    print("N has to be three or larger, N is set to 3")
+        # Setting a initial value for t and running the while loop forever and plotting every 0.05 seconds
+        t = 0
+        while True:
+            self.e.euler(t)
+            self.h.heuns(t)
+            t += 1
+            plt.pause(0.05)
 
-# Setting the x and y limit.
-x_lim = [float(input("x, lower:\t")), float(input("x, upper:\t"))]
-y_lim = [float(input("y, lower:\t")), float(input("y, upper:\t"))]
-# Setting starting x and y. But with default values, x = x_lim[0] + 1 and y = y_lim[0] + 1.
-x = ""
-y = ""
-# Doing a try except for ValueError, and asserting default values if the ValueError is hit
-try:
-    x = int(input(f"provide a starting value for x(default is {x_lim[0] + 1}):\t"))
-except ValueError:
-    if x == "":
-        x = x_lim[0] + 1
-try:    
-    y = int(input(f"provide a starting value for y(default is {y_lim[0] + 1}):\t"))
-except ValueError:
-    if y == "":
-        y = y_lim[0] + 1
-plot = True
-# Initializing Forward Euler and Heuns with the values they need.
-e = Algo(N, mu, ax[0], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, plot, x, y)
-h = Algo(N, mu, ax[1], v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, plot, x, y)
+    def show_function(self):
+        check = self.fig.add_subplot(111, projection='3d')
+        # Using linspace with limts to create the X and Y values
+        X = np.linspace(self.x_lim[0], self.x_lim[1], 60)
+        Y = np.linspace(self.y_lim[0], self.y_lim[1], 60)
+        # Creating a meshgrig with the two linspaces above
+        X, Y = np.meshgrid(X, Y)
+        fun = function_prot(0.001, self.func)
+        # Creating Z using the given function
+        Z = fun.f(X, Y)
+        # Initializing the plot using a for loop and giving them titles
+        check.plot_wireframe(X, Y, Z, rstride=3, cstride=3)
+        check.set_xlabel("X-axis")
+        check.set_ylabel("Y-axis")
+        check.set_zlabel("Z-axis")
+        plt.show()
+        print("plotted " + self.func)
+        plt.show()
 
-# Using linspace with limts to create the X and Y values
-X = np.linspace(x_lim[0], x_lim[1], 60)
-Y = np.linspace(y_lim[0], y_lim[1], 60)
-# Creating a meshgrig with the two linspaces above
-X,Y = np.meshgrid(X, Y)
-fun = function_prot(0.001, func)
-# Creating Z using the given function
-Z = fun.f(X,Y)
-# Initializing the plot using a for loop and giving them titles
-titles = ["Euler Cromer", "Heun's Method"]
-for i in range(len(ax)):
-    ax[i].plot_wireframe(X, Y, Z, rstride=3, cstride=3)
-    ax[i].set_title(titles[i])
-    ax[i].set_xlabel("X-axis")
-    ax[i].set_ylabel("Y-axis")
-    ax[i].set_zlabel("Z-axis")
 
-# Setting a initial value for t and running the while loop forever and plotting every 0.05 seconds
-t = 0
-while True:
-    e.euler(t)
-    h.heuns(t)
-    t+=1
-    plt.pause(0.05)
-
-plt.show()
-
-print("Simulation is finished")
+if __name__ == "__main__":
+    # Run an example simulation to test different
+    s = Simulation(0.01, "np.sin(x)+np.cos(y)", 0.3, 1, 1, 1, 10, [0, 10], [0, 10], True, 1, 1)
+    s.simulate()
