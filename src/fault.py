@@ -7,11 +7,10 @@
 """
 import csv
 from time import time
-
 import matplotlib.pyplot as plt
-
 from lib.Algorithms import *
 from lib.function_prot import *
+from simulation import *
 
 print("Simulating a object sliding down a function")
 
@@ -25,86 +24,49 @@ def write_file(x_cord, y_cord, dt_end, type_write):
         f.close()
 
 
-dt = 0.1
-# Doing some assignments for matplotlib, fig, ax[2] 
-fig = plt.figure()
-ax = fig.add_subplot(111)
-func = "np.sin(x)+np.cos(y)"
-mu = 0.1
-USER_PC = 1
-v_ix = 1
-v_iy = 1
-N = 3
-x_lim = [1, 10]
-y_lim = [1, 10]
-x = x_lim[0] + 1
-y = y_lim[0] + 1
-plot = False
-# Initializing Forward Euler and Heuns with the values they need.
-e = Algo(N, mu, ax, v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, plot, x, y)
-h = Algo(N, mu, ax, v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, plot, x, y)
-# Initializing the plot using a for loop and giving them titles
-# Setting a initial value for t and running the while loop forever and plotting every 0.05 seconds
-steps = 5
-tend = 0.5
-time_t = time()
-print("calculating perfect val")
-for i in range(25):
-    dt /= 2
-print(dt)
-h.set_dt(dt)
-try:
-    with open("data/data_" + str(dt) + ".csv", newline='') as csvfile:
+def read_file(delta):
+    with open("data/data_2.9802322387695314e-09.csv", newline="") as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         next(reader)
         result = []
         for row in reader:
             for col in row:
                 result.append(col)
-        x_end = float(result[0])
-        y_end = float(result[1])
-        dt = float(result[2])
+        x_last = float(result[0])
+        y_last = float(result[1])
+        delta = float(result[2])
 
         csvfile.close()
-except IOError:
-    print(f"end {steps / dt}")
-    t = 0
-    while t < tend / dt:
-        (x_end, y_end) = h.heuns(t)
-        t += 1
 
-    write_file(x_end, y_end, dt)
-    print(f"value calculated in {time() - time_t}")
-print(f"x {x_end} y {y_end} dt {dt}")
+    return x_last, y_last, delta
 
-dt = 0.1
-end = tend / dt
-t = 0
-fh = [1] * steps
-fe = [1] * steps
-dts = [1] * steps
-for i in range(0, steps):
-    e.re_init(dt, v_ix, v_iy, x, y)
-    h.re_init(dt, v_ix, v_iy, x, y)
-    while t < end - 1:
-        e.euler(t)
-        h.heuns(t)
-        t += 1
-    (xe, ye) = e.euler(t)
-    (xh, yh) = h.heuns(t)
-    fe[i] = np.sqrt(np.power(x_end - xe, 2) + np.power(y_end - ye, 2))
-    fh[i] = np.sqrt(np.power(x_end - xh, 2) + np.power(y_end - yh, 2))
-    print(f"FH: {fh[i]}\tFE: {fe[i]} ")
-    dts[i] = dt
-    dt /= 2
-    i += 1
-    t = 0
-    end = tend / dt
 
-print(f"Simulation is finished. It took {time() - time_t}")
-ax.loglog(dts, np.abs(fe), 'bo-', marker="*", linewidth=1, label="Euler")
-ax.loglog(dts, np.abs(fh), 'go-', marker="*", linewidth=1, label="Heun's")
-ax.set_xlabel("dt")
-ax.set_ylabel("Error")
-ax.legend()
-plt.show()
+def create_file(time_end):
+    iterations = 0
+    while iterations < time_end / dt:
+        (x_last, y_last) = s.h.heuns(iterations)
+        iterations += 1
+
+    write_file(x_last, y_last, dt)
+    print(f"value calculated in {time() - time_total}")
+
+    return x_last, y_last, dt
+
+
+def low_dt(initial_dt, x):
+    for i in range(x):
+        initial_dt /= 2
+
+    return initial_dt
+
+
+if __name__ == "__main__":
+    s = Simulation(0.1, "np.sin(x)+np.cos(y)", 0.1, 1, 1, 1, 3, [1, 10], [1, 10], False, 2, 2)
+    dt = low_dt(0.1, 25)
+    try:
+        x_end, y_end, dt = read_file(dt)
+    except IOError:
+        x_end, y_end, dt = create_file(0.5)
+    s.plot_fault(0.1, 10, 0.5, x_end, y_end)
+    time_total = time()
+    print(f"Simulation is finished. It took {time() - time_total}")

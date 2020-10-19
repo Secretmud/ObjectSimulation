@@ -1,5 +1,6 @@
 import math
 
+
 class InputValidation:
 
     def validatefunc(self, func):
@@ -33,9 +34,5 @@ class InputValidation:
 
         return True if (lower <= pos <= upper) else False
 
-
-
-    def validatelim(self, func):
-        x_lim = [float(input("x, lower:\t")), float(input("x, upper:\t"))]
-        y_lim = [float(input("y, lower:\t")), float(input("y, upper:\t"))]
-
+    def validatelim(self, lim):
+        return True if lim[0] != lim[1] else False
