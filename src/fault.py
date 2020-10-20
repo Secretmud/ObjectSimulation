@@ -62,7 +62,7 @@ def low_dt(initial_dt, x):
 
 if __name__ == "__main__":
     s = Simulation(0.1, "np.sin(x)+np.cos(y)", 0.1, 1, 1, 1, 3, [1, 10], [1, 10], False, 2, 2)
-    dt = low_dt(0.1, 25)
+    dt = low_dt(0.1, 15)
     try:
         x_end, y_end, dt = read_file(dt)
     except IOError:

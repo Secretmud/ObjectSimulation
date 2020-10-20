@@ -20,8 +20,8 @@ class Simulation:
     def __init__(self, dt, func, mu, update_time, v_ix, v_iy, n, x_lim, y_lim, plot, x, y):
         self.dt = dt
         self.fig = plt.figure()
+        self.ax = [0] * 2
         if plot:
-            self.ax = [0] * 2
             self.ax[0] = self.fig.add_subplot(121, projection='3d')
             self.ax[1] = self.fig.add_subplot(122, projection='3d')
         else:
@@ -112,6 +112,8 @@ class Simulation:
         # Plot the values in a loglog plot
         self.fault.loglog(dts, fe, 'bo-', marker="*", linewidth=1, label="Euler")
         self.fault.loglog(dts, fh, 'go-', marker="*", linewidth=1, label="Heun's")
+        self.fault.loglog(dts, np.power(dts, 2), 'r--', linewidth=1, label="dt^2")
+        self.fault.loglog(dts, dts, 2, 'o--', linewidth=1, label="dt")
         self.fault.set_xlabel("dt")
         self.fault.set_ylabel("Error")
         self.fault.legend()
