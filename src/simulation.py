@@ -61,10 +61,9 @@ class Simulation:
             self.e.euler(t)
             self.h.heuns(t)
             t += 1
-            plt.pause(self.dt/22)
+            plt.pause(self.dt / 22)
 
         plt.show()
-
 
     def show_function(self):
         check = self.fig.add_subplot(111, projection='3d')
@@ -104,7 +103,7 @@ class Simulation:
             fh[index] = np.sqrt(np.power(x_end - xh, 2) + np.power(y_end - yh, 2))
             dts[index] = dt  # Write the dt used to an array
             dt /= 2
-            print(f"FE: {fe[index]}\tFH: {fh[index]}")
+            print(f"FE: {xe} {ye} {fe[index]}\tFH: {xh} {yh} {fh[index]}")
             index += 1
             iterate = 0
             end = time_end / dt
@@ -112,15 +111,14 @@ class Simulation:
         # Plot the values in a loglog plot
         self.fault.loglog(dts, fe, 'bo-', marker="*", linewidth=1, label="Euler")
         self.fault.loglog(dts, fh, 'go-', marker="*", linewidth=1, label="Heun's")
-        self.fault.loglog(dts, np.power(dts, 2), 'r--', linewidth=1, label="dt^2")
-        self.fault.loglog(dts, dts, 2, 'o--', linewidth=1, label="dt")
         self.fault.set_xlabel("dt")
         self.fault.set_ylabel("Error")
         self.fault.legend()
+        self.fault.grid(color="b", linestyle="-", linewidth=1)
         plt.show()
 
 
 if __name__ == "__main__":
     # Run an example simulation to test different
-    s = Simulation(0.1, "np.sin(x)+np.cos(y)", 0.1, 1, 1, 1, 3, [1, 10], [1, 10], True, 2, 2)
-    s.simulate()
+    s = Simulation(dt=0.1, func="np.sin(x)+np.cos(y)", mu=0.1, update_time=1, v_ix=1, v_iy=1, n=3, x_lim=[1, 10], y_lim=[1, 10], plot=True, x=2, y=2)
+    s.show_function()
