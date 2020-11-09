@@ -114,12 +114,13 @@ class Algo:
         # This creates a smooth animation.
         if self.plot:
             if t == 0:
-                self.l = self.ax.scatter(self.pos_x, self.pos_y, self.pos_z, color="black")
+                self.l = self.ax.scatter(self.pos_x, self.pos_y, self.pos_z,
+                        color="black", zorder=1)
             if t % self.USER_PC == 0:
                 self.l.remove()
-                self.l = self.ax.scatter(self.pos_x, self.pos_y, self.pos_z, color="black")
+                self.l = self.ax.scatter(self.pos_x, self.pos_y, self.pos_z,
+                        color="black", zorder=1)
 
-        # Increment i    
         self.i += 1
 
         return self.pos_x[self.i], self.pos_y[self.i]
@@ -134,8 +135,10 @@ class Algo:
         returns a tuple (v_vector, a_vector)
         """
         self.reset()  # Reset if i + 1 == Self.N
-        a1 = self.a_x(self.pos_x[self.i] + self.vx[self.i] * self.dt / 2, self.pos_y[self.i] + self.vy[self.i] * self.dt / 2)  # Calculate the acceleration at the at the current step
-        a2 = self.a_y(self.pos_x[self.i] + self.vx[self.i] * self.dt / 2, self.pos_y[self.i] + self.vy[self.i] * self.dt / 2)
+        a1 = self.a_x(self.pos_x[self.i] + self.vx[self.i] * self.dt / 2,
+                      self.pos_y[self.i] + self.vy[self.i] * self.dt / 2)  # Calculate the acceleration at the at the current step
+        a2 = self.a_y(self.pos_x[self.i] + self.vx[self.i] * self.dt / 2,
+                      self.pos_y[self.i] + self.vy[self.i] * self.dt / 2)
         self.vx[self.i + 1] = self.vx[self.i] + a1 * self.dt  # Update the the velocity for the next step
         self.vy[self.i + 1] = self.vy[self.i] + a2 * self.dt
         # Update the next position for x,y and z. x and y is calculated based on the velocity and z is based on x and y. 
@@ -155,7 +158,6 @@ class Algo:
                 self.l.remove()
                 self.l = self.ax.scatter(self.pos_x, self.pos_y, self.pos_z, color="black")
 
-        # Increment i    
         self.i += 1
 
         return self.pos_x[self.i], self.pos_y[self.i]

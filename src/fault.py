@@ -78,5 +78,5 @@ if __name__ == "__main__":
         x_end, y_end, dt = f.create_file()
 
     print(x_end, y_end, dt)
-    s.plot_fault(0.1, 20, 0.5, x_end, y_end)
+    s.plot_fault(0.1, 4, 0.5, x_end, y_end)
     print(f"Simulation is finished. It took {time() - time_total}")

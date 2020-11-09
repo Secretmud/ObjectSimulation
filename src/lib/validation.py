@@ -23,16 +23,18 @@ class InputValidation:
 
     def validateN(self, N):
         if type(N) == int:
-            if 2 < N < 1e5:
+            if 2 < N < 1e3:
                 return True
 
         return False
 
     def validatestart(self, pos, lim):
-        lower = min(lim[0], lim[1])
-        upper = max(lim[0], lim[1])
+        if type(lim[0]) == int and type(lim[1]) == int:
+            lower = min(lim[0], lim[1])
+            upper = max(lim[0], lim[1])
 
-        return True if (lower <= pos <= upper) else False
+            return True if (lower <= pos <= upper) else False
+        return False
 
     def validatelim(self, lim):
         return True if lim[0] != lim[1] else False
