@@ -13,6 +13,8 @@ import numpy as np
 from lib.Algorithms import *
 from lib.function_prot import *
 from time import sleep
+import os
+import csv
 
 
 class Simulation:
@@ -43,7 +45,7 @@ class Simulation:
         Y = np.linspace(self.y_lim[0], self.y_lim[1], 60)
         # Creating a meshgrid with the two linspaces above
         X, Y = np.meshgrid(X, Y)
-        fun = function_prot(0.001, self.func)
+        fun = Function_prot(0.001, self.func)
         # Creating Z using the given function
         Z = fun.f(X, Y)
         # Initializing the plot using a for loop and giving them titles
@@ -72,7 +74,7 @@ class Simulation:
         Y = np.linspace(self.y_lim[0], self.y_lim[1], 60)
         # Creating a meshgrig with the two linspaces above
         X, Y = np.meshgrid(X, Y)
-        fun = function_prot(0.001, self.func)
+        fun = Function_prot(0.001, self.func)
         # Creating Z using the given function
         Z = fun.f(X, Y)
         # Initializing the plot using a for loop and giving them titles
@@ -97,8 +99,8 @@ class Simulation:
                 self.e.euler(iterate)
                 self.h.heuns(iterate)
                 iterate += 1
-            (xe, ye) = self.e.euler(iterate)  # Fetch the last two variables
-            (xh, yh) = self.h.heuns(iterate)
+            xe, ye, _ = self.e.euler(iterate)  # Fetch the last two variables
+            xh, yh, _ = self.h.heuns(iterate)
             fe[index] = np.sqrt(np.power(x_end - xe, 2) + np.power(y_end - ye, 2))  # Write  the error to an array
             fh[index] = np.sqrt(np.power(x_end - xh, 2) + np.power(y_end - yh, 2))
             dts[index] = dt  # Write the dt used to an array
@@ -117,8 +119,33 @@ class Simulation:
         self.fault.grid(color="b", linestyle="-", linewidth=1)
         plt.show()
 
+    def write_file(self, name, x, y, z, ax, ay, vx, vy):
+        file_name = "data/data_" + str(name) + ".csv"
+        file_exists = os.path.isfile(file_name)
+        with open(file_name, "a", newline="") as f:
+            fieldnames = ["x", "y", "z", "ax", "ay", "vx", "vy"]
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow({'x': x, 'y': y, 'z': z, 'ax' : ax,'ay' : ay,'vx' : vx,'vy' : vy})
+            f.close()
+        
+    def write_data(self):
+        t = 0
+        file_name1 = "data/data_euler.csv"
+        file_name2 = "data/data_heuns.csv"
+        os.remove(file_name1)
+        os.remove(file_name2)
+        while t < 200:
+            ex, ey, ez, eax, eay, evx, evy  = self.e.euler(t) 
+            hx, hy, hz, hax, hay, hvx, hvy  = self.h.heuns(t) 
+            self.write_file("euler", ex, ey, ez, eax, eay, evx, evy)
+            self.write_file("heuns", hx, hy, hz, hax, hay, hvx, hvy)
+            print(f"iteration: {t}", end="\r")
+            t += 1
+
 
 if __name__ == "__main__":
     # Run an example simulation to test different
-    s = Simulation(dt=0.1, func="np.sin(x)+np.cos(y)", mu=0.1, update_time=1, v_ix=1, v_iy=1, n=3, x_lim=[1, 10], y_lim=[1, 10], plot=True, x=2, y=2)
-    s.show_function()
+    s = Simulation(dt=0.06, func="np.sin(x)+np.cos(y)", mu=0.1, update_time=1, v_ix=1, v_iy=1, n=3, x_lim=[1, 8], y_lim=[1, 6], plot=False, x=2, y=2)
+    s.write_data()

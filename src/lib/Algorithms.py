@@ -18,7 +18,7 @@ class Algo:
     """
 
     def __init__(self, N, mu, ax, v_ix, v_iy, func, dt, x_lim, y_lim, USER_PC, plot, x, y):
-        self.fun = function_prot(0.0001, func)
+        self.fun = Function_prot(1e-3, func)
         self.dt = dt
         self.N = N
         self.vx = [v_ix] * N
@@ -26,7 +26,7 @@ class Algo:
         self.pos_x = [x] * N
         self.pos_y = [y] * N
         self.pos_z = [self.fun.f(self.pos_x[0], self.pos_y[0])] * N
-        self.p = physics(9.81, mu, self.dt)
+        self.p = Physics(9.81, mu, self.dt)
         self.i = 0
         self.l = 0
         self.ax = ax
@@ -122,7 +122,7 @@ class Algo:
         # Increment i    
         self.i += 1
 
-        return self.pos_x[self.i], self.pos_y[self.i]
+        return self.pos_x[self.i], self.pos_y[self.i], self.pos_z[self.i], a1, a2, self.vx[self.i], self.vy[self.i] 
 
     def heuns(self, t):
         """heuns(t) takes iteration as an argument. 
@@ -158,4 +158,4 @@ class Algo:
         # Increment i    
         self.i += 1
 
-        return self.pos_x[self.i], self.pos_y[self.i]
+        return self.pos_x[self.i], self.pos_y[self.i], self.pos_z[self.i], a1, a2, self.vx[self.i], self.vy[self.i] 

@@ -19,7 +19,7 @@ i = 0
 x_vec = [0]
 fps_tot = 60
 
-p = physics(m, g, mu)
+p = Physics(m, g, mu)
 
 # The function to use
 def f(x):

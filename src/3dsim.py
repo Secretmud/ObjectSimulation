@@ -30,7 +30,7 @@ x_tail = []
 y_tail = []
 x_lim = [-7.5, 0]
 y_lim = [-5, 5]
-p = physics(m, g, mu)
+p = Physics(m, g, mu)
 
 # The function to use
 def f(x, y):

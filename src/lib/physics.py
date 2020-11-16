@@ -7,7 +7,7 @@
 """
 from math import atan, sin, cos
 
-class physics:
+class Physics:
     def __init__(self, g, mu, step):
         self.g = g
         self.mu = mu
