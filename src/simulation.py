@@ -7,6 +7,7 @@
 """
 from math import *
 import matplotlib.pyplot as plt
+from matplotlib import cm, rc
 from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
@@ -50,12 +51,15 @@ class Simulation:
         Z = fun.f(X, Y)
         # Initializing the plot using a for loop and giving them titles
         titles = ["Forward Euler", "Heun's Method"]
+        norm = plt.Normalize(Z.min(), Z.max())
+        colors = cm.viridis(norm(Z))
+        rcount, ccount, _ = colors.shape
         for i in range(len(self.ax)):
-            self.ax[i].plot_wireframe(X, Y, Z, rstride=3, cstride=3)
+            self.ax[i].plot_surface(X, Y, Z, rcount=rcount, ccount=ccount, facecolors=colors, shade=False)
             self.ax[i].set_title(titles[i])
-            self.ax[i].set_xlabel("X-axis")
-            self.ax[i].set_ylabel("Y-axis")
-            self.ax[i].set_zlabel("Z-axis")
+            self.ax[i].set_xlabel("X-axis", fontsize=18)
+            self.ax[i].set_ylabel("Y-axis", fontsize=18)
+            self.ax[i].set_zlabel("Z-axis", fontsize=18)
 
         # Setting a initial value for t and running the while loop forever and plotting every 0.05 seconds
         t = 0
@@ -78,10 +82,14 @@ class Simulation:
         # Creating Z using the given function
         Z = fun.f(X, Y)
         # Initializing the plot using a for loop and giving them titles
-        check.plot_wireframe(X, Y, Z, rstride=3, cstride=3)
-        check.set_xlabel("X-axis")
-        check.set_ylabel("Y-axis")
-        check.set_zlabel("Z-axis")
+        norm = plt.Normalize(Z.min(), Z.max())
+        colors = cm.viridis(norm(Z))
+        rcount, ccount, _ = colors.shape
+        check.plot_surface(X, Y, Z, rcount=rcount, ccount=ccount,
+                facecolors=colors, shade=False)
+        check.set_xlabel("X-axis", fontsize=18)
+        check.set_ylabel("Y-axis", fontsize=18)
+        check.set_zlabel("Z-axis", fontsize=18)
         print("plotted " + self.func)
         plt.show()
 
@@ -111,10 +119,13 @@ class Simulation:
             end = time_end / dt
 
         # Plot the values in a loglog plot
-        self.fault.loglog(dts, fe, 'bo-', marker="*", linewidth=1, label="Euler")
-        self.fault.loglog(dts, fh, 'go-', marker="*", linewidth=1, label="Heun's")
-        self.fault.set_xlabel("dt")
-        self.fault.set_ylabel("Error")
+        rc('legend', fontsize=18)
+        self.fault.loglog(dts, fe, marker="o", mfc="white",
+                mec="black", c="blue", linewidth=1, label="Euler")
+        self.fault.loglog(dts, fh, marker="o", mfc="white",
+                mec="black", c="green", linewidth=1, label="Heun's")
+        self.fault.set_xlabel("dt",   fontsize=22)
+        self.fault.set_ylabel("Error",fontsize=22)
         self.fault.legend()
         self.fault.grid(color="b", linestyle="-", linewidth=1)
         plt.show()
