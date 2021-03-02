@@ -145,8 +145,11 @@ class Simulation:
         t = 0
         file_name1 = "data/data_euler.csv"
         file_name2 = "data/data_heuns.csv"
-        os.remove(file_name1)
-        os.remove(file_name2)
+        try:
+            os.remove(file_name1)
+            os.remove(file_name2)
+        except:
+            print("files not present")
         while t < 200:
             ex, ey, ez, eax, eay, evx, evy  = self.e.euler(t) 
             hx, hy, hz, hax, hay, hvx, hvy  = self.h.heuns(t) 
